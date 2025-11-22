@@ -1,100 +1,64 @@
-/* ========== DARKMODE ==========*/
+/* ==============================================
+   SCRIPT.JS – Luiza Maia Advocacia
+   Funcionalidades:
+   • Dark mode persistente (Local Storage)
+   • Controle do Menu Mobile
+   ============================================== */
 
-let darkmode = localStorage.getItem('darkmode');
-const themeSwitch = document.getElementById('theme-switch');
+document.addEventListener('DOMContentLoaded', () => {
+  
+  /* =========================================
+     1. DARK MODE (TEMA ESCURO)
+     ========================================= */
+  const themeSwitch = document.getElementById('theme-switch');
+  const body = document.body;
 
-const enableDarkmode = () => {
-    document.body.classList.add('darkmode');
-    localStorage.setItem('darkmode', 'active');
-}
+  // Verifica se o usuário já escolheu o tema antes
+  const savedTheme = localStorage.getItem('darkmode');
+  if (savedTheme === 'enabled') {
+    body.classList.add('darkmode');
+  }
 
-const disableDarkmode = () => {
-    document.body.classList.remove('darkmode');
-    localStorage.setItem('darkmode', null);
-}
+  themeSwitch.addEventListener('click', () => {
+    // Alterna a classe CSS
+    body.classList.toggle('darkmode');
 
-if(darkmode === "active") enableDarkmode()
-
-themeSwitch.addEventListener("click", () => {
-    darkmode = localStorage.getItem('darkmode')
-    if(darkmode !== "active"){
-        enableDarkmode()
+    // Salva a escolha na memória do navegador
+    if (body.classList.contains('darkmode')) {
+      localStorage.setItem('darkmode', 'enabled');
+    } else {
+      localStorage.setItem('darkmode', 'disabled');
     }
-    else{
-        disableDarkmode()
-    }
-});
+  });
 
-/* ========== MENU SANDUICHE ==========*/
+  /* =========================================
+     2. MENU MOBILE (HAMBURGUER)
+     ========================================= */
+  const navbarToggle = document.querySelector('.navbar-toggle');
+  const navMenu = document.querySelector('.nav-menu');
+  const navLinks = document.querySelectorAll('.nav-link');
 
-const navbarToggle = document.querySelector('.navbar-toggle');
-const navbarMenu = document.querySelector('.nav-menu'); // corrigido
-
-navbarToggle.addEventListener('click', () => {
+  // Abrir / Fechar menu ao clicar no botão
+  navbarToggle.addEventListener('click', () => {
     navbarToggle.classList.toggle('active');
-    navbarMenu.classList.toggle('active');
-});
+    navMenu.classList.toggle('active');
+  });
 
-const navLinks = document.querySelectorAll('.nav-link');
-
-navLinks.forEach(link => {
+  // Fechar o menu automaticamente ao clicar em um link
+  navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        navbarToggle.classList.remove('active');
-        navbarMenu.classList.remove('active');
+      navbarToggle.classList.remove('active');
+      navMenu.classList.remove('active');
     });
-});
+  });
 
-/* ========== CARROSSEL ==========*/
-
-document.querySelectorAll('.slider-wrapper').forEach(wrapper => {
-  const cardList = wrapper.querySelector('.card-list');
-  const cards = wrapper.querySelectorAll('.card-item');
-  const prevBtn = wrapper.querySelector('.prev');
-  const nextBtn = wrapper.querySelector('.next');
-
-  // Se só tiver 1 card, não duplicar e esconder botões
-  if (cards.length <= 3) {
-    prevBtn.style.display = 'none';
-    nextBtn.style.display = 'none';
-    return; // pula o restante do código de infinite slide
-  }
-
-  let index = 0;
-  const cardWidth = cards[0].offsetWidth + 20; // largura + margem
-  const totalCards = cards.length;
-
-  // Duplicar cards para efeito infinito
-  cardList.innerHTML += cardList.innerHTML;
-
-  function slideTo(newIndex) {
-    index = newIndex;
-    cardList.style.transition = "transform 0.4s ease-in-out";
-    cardList.style.transform = `translateX(${-index * cardWidth}px)`;
-  }
-
-  // Resetar posição quando chega no fim
-  cardList.addEventListener("transitionend", () => {
-    if (index >= totalCards) {
-      index = 0;
-      cardList.style.transition = "none";
-      cardList.style.transform = `translateX(0)`;
-    }
-    if (index < 0) {
-      index = totalCards - 1;
-      cardList.style.transition = "none";
-      cardList.style.transform = `translateX(${-index * cardWidth}px)`;
+  // UX: Fechar o menu se clicar FORA dele
+  document.addEventListener('click', (e) => {
+    // Se o clique NÃO foi no botão E NÃO foi dentro do menu
+    if (!navbarToggle.contains(e.target) && !navMenu.contains(e.target)) {
+      navbarToggle.classList.remove('active');
+      navMenu.classList.remove('active');
     }
   });
 
-  // Botões
-  nextBtn.addEventListener("click", () => slideTo(index + 1));
-  prevBtn.addEventListener("click", () => slideTo(index - 1));
-});
-
-/* ========== LINK CARDS =========== */
-
-document.querySelectorAll(".message-button").forEach(button => {
-  button.addEventListener("click", function() {
-    window.open("https://wa.me/message/EY7UTCN7VDASD1", "_blank");
-  });
 });
